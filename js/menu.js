@@ -1,8 +1,10 @@
 import { addToCart } from "./cart.js";
 
+const SERVER_IP = "192.168.3.61:3000"; // IP do seu PC na rede
+
 export const fetchAndRenderMenu = async (restaurantId) => {
   try {
-    const res = await fetch(`http://localhost:3000/restaurants/${restaurantId}/menu`);
+    const res = await fetch(`http://${SERVER_IP}/restaurants/${restaurantId}/menu`);
     const categories = await res.json(); // array de categorias com itens
     renderMenu(categories);
   } catch (err) {
@@ -22,13 +24,11 @@ const renderMenu = (categories) => {
   }
 
   categories.forEach((cat) => {
-    // Título da categoria
     const catTitle = document.createElement("h3");
     catTitle.textContent = cat.category;
     catTitle.className = "text-xl font-semibold mt-6 mb-2";
     container.appendChild(catTitle);
 
-    // Lista de produtos
     cat.items.forEach((product) => {
       const card = document.createElement("div");
       card.className =

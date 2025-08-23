@@ -64,6 +64,6 @@ app.get('/restaurants/:id/menu', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor rodando na rede na porta ${port}`);
 });
