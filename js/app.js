@@ -1,8 +1,5 @@
-
-import { initFirebase } from "./firebase.js";
 import { loadRestaurants } from "./restaurants.js";
-
-let pageHistory = ["home"];
+import { loadOrders } from "./orders.js"; // <- importando loadOrders
 
 window.showPage = (pageId, previousPageId = null) => {
   const allPages = document.querySelectorAll(".page");
@@ -55,25 +52,9 @@ window.showPage = (pageId, previousPageId = null) => {
     cartButton.classList.add("scale-0");
     cartButton.classList.remove("scale-100");
   }
-};
 
-window.goBack = () => {
-  if (pageHistory.length > 1) {
-    pageHistory.pop();
-    showPage(pageHistory[pageHistory.length - 1]);
+  // -> Chamada automática de loadOrders quando abrir a página de pedidos
+  if (pageId === "orders") {
+    loadOrders();
   }
 };
-
-window.showMessage = (text) => {
-  const modal = document.getElementById("message-modal");
-  const modalText = document.getElementById("modal-text");
-  modalText.textContent = text;
-  modal.classList.remove("hidden");
-};
-
-// Inicia Firebase e carrega restaurantes
-document.addEventListener("DOMContentLoaded", () => {
-  initFirebase(() => {
-    loadRestaurants();
-  });
-});
