@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CatFood</title>
+
+  <!-- Fonte e Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS custom -->
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body
+  class="bg-gray-100 min-h-screen flex items-center justify-center p-4 sm:p-6"
+>
+  <div
+    class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[90vh] sm:h-[80vh]"
+  >
+    <!-- Header -->
+    <header
+      id="app-header"
+      class="p-4 flex items-center justify-between bg-purple-600 text-white rounded-t-3xl transition-all duration-300"
+    >
+      <div class="flex items-center space-x-2">
+        <button id="back-button" class="hidden" onclick="goBack()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.842 12.022a.75.75 0 000-1.06L14.47 12l2.37-2.37a.75.75 0 10-1.06-1.06l-2.828 2.829a.75.75 0 000 1.06l2.828 2.828a.75.75 0 001.06 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        <h1 id="header-title" class="text-xl font-bold">CatFood</h1>
+      </div>
+
+      <div class="flex items-center space-x-2" id="location-icon-container">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75H18a.75.75 0 000-1.5h-5.25V6z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="text-sm font-semibold text-white">Rua das Flores, 456</span>
+      </div>
+
+      <button
+        class="flex items-center justify-center w-9 h-9 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors"
+        onclick="showPage('profile')"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 16.5a.75.75 0 01.75-.75h13.5a.75.75 0 01.75.75s-.002 0-2.825 0c-2.484 0-4.636 1.488-6.175 3.654A9.124 9.124 0 0112 22.5a9.124 9.124 0 01-2.95-2.288C8.387 18.238 6.234 16.75 3.751 16.5zm-1.876.75a.75.75 0 01.75-.75H5.25a.75.75 0 01.75.75c0 2.213-.761 4.281-2.051 5.918A.75.75 0 011.875 22.5zM18 17.25a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75c0 2.213-.761 4.281-2.051 5.918a.75.75 0 01-1.449-.672c1.29-1.637 2.051-3.705 2.051-5.918z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="text-xs mt-1">Perfil</span>
+      </button>
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="flex-grow overflow-y-auto p-4 space-y-6 relative">
+      <div id="home-page" class="page">
+        <div id="local-restaurants" class="flex flex-col space-y-4">
+          <p id="loading-message" class="text-center text-gray-500 mt-8">
+            Carregando restaurantes...
+          </p>
+        </div>
+      </div>
+
+      <div id="menu-page" class="page hidden">
+        <h2 id="menu-restaurant-name" class="text-2xl font-bold text-gray-800"></h2>
+        <p id="menu-restaurant-type" class="text-sm text-gray-500 -mt-2"></p>
+        <div id="menu-products" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </div>
+
+      <div id="orders-page" class="page hidden">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Meus Pedidos</h2>
+        <div id="order-list" class="flex flex-col space-y-4"></div>
+      </div>
+
+      <div id="profile-page" class="page hidden">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Meu Perfil</h2>
+        <div class="bg-gray-100 p-6 rounded-xl space-y-4">
+          <p class="text-gray-600">Dados do perfil aqui.</p>
+        </div>
+      </div>
+
+      <div id="cart-page" class="page hidden">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Meu Carrinho</h2>
+        <div id="cart-items" class="flex flex-col space-y-4"></div>
+        <div id="cart-total-container" class="mt-8 pt-4 border-t border-gray-200">
+          <div class="flex justify-between items-center text-lg font-bold">
+            <span>Total:</span>
+            <span id="cart-total">R$ 0,00</span>
+          </div>
+          <button id="checkout-btn" class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold mt-4 hover:bg-purple-700 transition-colors">
+            Finalizar Pedido
+          </button>
+        </div>
+      </div>
+
+      <!-- Botão flutuante do carrinho -->
+      <button id="cart-button"
+        class="fixed bottom-20 right-8 bg-purple-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform transform scale-0"
+        onclick="showPage('cart')"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2.2l3.4 7.35L5.4 14H19v-2H6.4l-.8-2H21V4H5.2L4.4 2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full hidden">0</span>
+      </button>
+
+      <!-- Modal de mensagem -->
+      <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full text-center shadow-lg">
+          <p id="modal-text" class="text-lg font-semibold text-gray-800"></p>
+          <button onclick="document.getElementById('message-modal').classList.add('hidden')" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">Ok</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Barra inferior -->
+    <nav class="flex justify-around items-center h-16 border-t border-gray-200">
+      <button class="nav-item flex flex-col items-center p-2 text-purple-600" onclick="showPage('home')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 5.69l5-4.5V21h-2v-4h-2v4h-2v-4h-2v4H7V1.19l5 4.5zM12 3L4 10.5V21h16V10.5L12 3z"/>
+        </svg>
+        <span class="text-xs mt-1">Início</span>
+      </button>
+      <button class="nav-item flex flex-col items-center p-2 text-gray-400 hover:text-purple-600 transition-colors" onclick="showPage('orders')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2.2l3.4 7.35L5.4 14H19v-2H6.4l-.8-2H21V4H5.2L4.4 2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <span class="text-xs mt-1">Pedidos</span>
+      </button>
+      <button class="nav-item flex flex-col items-center p-2 text-gray-400 hover:text-purple-600 transition-colors" onclick="showPage('profile')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span class="text-xs mt-1">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/firebase.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/restaurants.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/orders.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>
