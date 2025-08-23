@@ -1,13 +1,16 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const port = 3000;
 
+// Inicializa Supabase
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// ----------------- ENDPOINT 1 -----------------
+// ----------------- ENDPOINTS -----------------
+
 // Lista restaurantes em ordem alfabética
 app.get('/restaurants', async (req, res) => {
   try {
@@ -17,7 +20,6 @@ app.get('/restaurants', async (req, res) => {
       .order('name', { ascending: true });
 
     if (error) throw error;
-
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -25,13 +27,11 @@ app.get('/restaurants', async (req, res) => {
   }
 });
 
-// ----------------- ENDPOINT 2 -----------------
 // Retorna itens de um restaurante separados por categoria
 app.get('/restaurants/:id/menu', async (req, res) => {
   const restaurantId = req.params.id;
 
   try {
-    // Pega categorias do restaurante
     const { data: categories, error: catError } = await supabase
       .from('menu_categories')
       .select('*')
@@ -40,7 +40,6 @@ app.get('/restaurants/:id/menu', async (req, res) => {
 
     if (catError) throw catError;
 
-    // Para cada categoria, pega os itens
     const menu = [];
     for (const cat of categories) {
       const { data: items, error: itemsError } = await supabase
@@ -53,7 +52,7 @@ app.get('/restaurants/:id/menu', async (req, res) => {
 
       menu.push({
         category: cat.name,
-        items: items
+        items
       });
     }
 
@@ -64,6 +63,17 @@ app.get('/restaurants/:id/menu', async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
+// ----------------- FRONTEND -----------------
+
+// Serve arquivos estáticos da pasta "catfood"
+app.use(express.static(path.join(__dirname)));
+
+// Para todas as outras rotas, retorna o index.html (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ----------------- INÍCIO DO SERVIDOR -----------------
+app.listen(port, () => {
   console.log(`Servidor rodando na rede na porta ${port}`);
 });
