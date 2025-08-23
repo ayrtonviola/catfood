@@ -1,48 +1,69 @@
-const express = require("express")
-const { createClient } = require("@supabase/supabase-js")
-require("dotenv").config()
+require('dotenv').config();
+const express = require('express');
+const { createClient } = require('@supabase/supabase-js');
 
-// 1. Conexão com Supabase
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-)
+const app = express();
+const port = 3000;
 
-// 2. Criar app Express
-const app = express()
-const PORT = 3000
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// 3. Endpoint para listar restaurantes + menus
-app.get("/restaurants", async (req, res) => {
+// ----------------- ENDPOINT 1 -----------------
+// Lista restaurantes em ordem alfabética
+app.get('/restaurants', async (req, res) => {
   try {
-    // Buscar restaurantes em ordem alfabética
-    const { data: restaurants, error: errorRestaurants } = await supabase
-      .from("restaurants")
-      .select("*")
-      .order("name", { ascending: true })
+    const { data, error } = await supabase
+      .from('restaurants')
+      .select('*')
+      .order('name', { ascending: true });
 
-    if (errorRestaurants) throw errorRestaurants
+    if (error) throw error;
 
-    // Buscar itens de menu
-    const { data: items, error: errorItems } = await supabase
-      .from("menu_items")
-      .select("*")
-
-    if (errorItems) throw errorItems
-
-    // Juntar cada restaurante com seus itens
-    const result = restaurants.map(r => ({
-      ...r,
-      menu: items.filter(i => i.restaurant_id === r.id)
-    }))
-
-    res.json(result)
+    res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message })
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar restaurantes' });
   }
-})
+});
 
-// 4. Rodar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`)
-})
+// ----------------- ENDPOINT 2 -----------------
+// Retorna itens de um restaurante separados por categoria
+app.get('/restaurants/:id/menu', async (req, res) => {
+  const restaurantId = req.params.id;
+
+  try {
+    // Pega categorias do restaurante
+    const { data: categories, error: catError } = await supabase
+      .from('menu_categories')
+      .select('*')
+      .eq('restaurant_id', restaurantId)
+      .order('name', { ascending: true });
+
+    if (catError) throw catError;
+
+    // Para cada categoria, pega os itens
+    const menu = [];
+    for (const cat of categories) {
+      const { data: items, error: itemsError } = await supabase
+        .from('menu_items')
+        .select('*')
+        .eq('category_id', cat.id)
+        .order('name', { ascending: true });
+
+      if (itemsError) throw itemsError;
+
+      menu.push({
+        category: cat.name,
+        items: items
+      });
+    }
+
+    res.json(menu);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar menu' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Servidor rodando em http://localhost:${port}`);
+});
