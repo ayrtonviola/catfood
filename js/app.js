@@ -58,3 +58,11 @@ window.showPage = (pageId, previousPageId = null) => {
     loadOrders();
   }
 };
+document.addEventListener("DOMContentLoaded", () => {
+  const userId = localStorage.getItem("userId");
+  if (userId) {
+    window.showPage("home");
+  } else {
+    window.showPage("signup");
+  }
+});
