@@ -9,6 +9,9 @@ const port = 3000;
 // Inicializa Supabase
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
+// Middleware para JSON
+app.use(express.json());
+
 // ----------------- ENDPOINTS -----------------
 
 // Lista restaurantes em ordem alfabética
@@ -52,7 +55,7 @@ app.get('/restaurants/:id/menu', async (req, res) => {
 
       menu.push({
         category: cat.name,
-        items
+        items,
       });
     }
 
@@ -63,17 +66,70 @@ app.get('/restaurants/:id/menu', async (req, res) => {
   }
 });
 
+// Salva um novo pedido
+app.post('/orders', async (req, res) => {
+  const { userId, items, total, status } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .insert([{ user_id: userId, items, total, status }]);
+
+    if (error) throw error;
+    res.status(201).json({ message: 'Pedido salvo com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao salvar pedido' });
+  }
+});
+
+// Lista pedidos de um usuário
+app.get('/orders/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar pedidos' });
+  }
+});
+// Cadastra um novo usuário
+app.post('/signup', async (req, res) => {
+  const { name, email, phone } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{ name, email, phone }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ id: data.id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao cadastrar usuário' });
+  }
+});
 // ----------------- FRONTEND -----------------
 
-// Serve arquivos estáticos da pasta "catfood"
+// Serve arquivos estáticos da pasta raiz
 app.use(express.static(path.join(__dirname)));
 
-// Para todas as outras rotas, retorna o index.html (SPA)
+// SPA: retorna index.html para qualquer rota desconhecida
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ----------------- INÍCIO DO SERVIDOR -----------------
 app.listen(port, () => {
-  console.log(`Servidor rodando na rede na porta ${port}`);
+  console.log(`Servidor rodando em http://localhost:${port}`);
 });

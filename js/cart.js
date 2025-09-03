@@ -1,9 +1,5 @@
-import { db, auth, appId } from "./firebase.js";
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
 export let cart = [];
 
-// Adiciona produto ao carrinho
 export const addToCart = (product) => {
   const existing = cart.find((item) => item.id === product.id);
   if (existing) {
@@ -14,13 +10,11 @@ export const addToCart = (product) => {
   renderCart();
 };
 
-// Remove produto do carrinho
 export const removeFromCart = (productId) => {
   cart = cart.filter((item) => item.id !== productId);
   renderCart();
 };
 
-// Renderiza o carrinho
 export const renderCart = () => {
   const container = document.getElementById("cart-items");
   const totalEl = document.getElementById("cart-total");
@@ -51,12 +45,10 @@ export const renderCart = () => {
 
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   totalEl.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
-
   countEl.textContent = cart.length;
   countEl.classList.remove("hidden");
 };
 
-// Função de finalizar pedido
 export const checkout = async () => {
   if (cart.length === 0) {
     window.showMessage("Seu carrinho está vazio!");
@@ -65,26 +57,30 @@ export const checkout = async () => {
 
   try {
     const order = {
-      userId: auth.currentUser ? auth.currentUser.uid : null,
+      userId: "anon", // ou substitua por ID real se tiver login
       items: cart,
       total: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
       status: "pendente",
-      createdAt: serverTimestamp(),
     };
 
-    await addDoc(collection(db, `artifacts/${appId}/public/data/orders`), order);
+    const res = await fetch("http://192.168.3.61:3000/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
+    });
+
+    if (!res.ok) throw new Error("Erro ao salvar pedido");
 
     cart = [];
     renderCart();
     window.showPage("orders");
     window.showMessage("Pedido realizado com sucesso!");
   } catch (e) {
-    console.error("Erro ao salvar pedido:", e);
+    console.error("Erro ao finalizar pedido:", e);
     window.showMessage("Erro ao finalizar pedido. Tente novamente.");
   }
 };
 
-// Conecta o botão "Finalizar Pedido"
 document.addEventListener("DOMContentLoaded", () => {
   const checkoutBtn = document.getElementById("checkout-btn");
   if (checkoutBtn) {

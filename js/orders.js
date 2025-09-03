@@ -1,41 +1,29 @@
-import { db, auth, appId } from "./firebase.js";
-import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-export const loadOrders = () => {
+export const loadOrders = async () => {
   const container = document.getElementById("order-list");
   container.innerHTML = `<p class="text-gray-600">Carregando pedidos...</p>`;
 
-  if (!auth.currentUser) {
-    container.innerHTML = `<p class="text-gray-600">Você precisa estar logado para ver seus pedidos.</p>`;
-    return;
-  }
+  try {
+    const res = await fetch("http://192.168.3.61:3000/orders/anon"); // ou ID real
+    const orders = await res.json();
 
-  const ordersRef = collection(db, `artifacts/${appId}/public/data/orders`);
-  const q = query(
-    ordersRef,
-    where("userId", "==", auth.currentUser.uid),
-    orderBy("createdAt", "desc")
-  );
-
-  onSnapshot(q, (snapshot) => {
     container.innerHTML = "";
-    if (snapshot.empty) {
+
+    if (!orders || orders.length === 0) {
       container.innerHTML = `<p class="text-gray-600">Você ainda não fez nenhum pedido.</p>`;
       return;
     }
 
-    snapshot.forEach((doc) => {
-      const order = doc.data();
+    orders.forEach((order) => {
       const orderCard = document.createElement("div");
       orderCard.className = "bg-white p-4 rounded-xl shadow-md mb-4";
 
       const itemsHtml = order.items
         .map(
-          (item) =>
-            `<div class="flex justify-between">
-               <span>${item.name} x ${item.quantity}</span>
-               <span>R$ ${(item.price * item.quantity).toFixed(2).replace(".", ",")}</span>
-             </div>`
+          (item) => `
+            <div class="flex justify-between">
+              <span>${item.name} x ${item.quantity}</span>
+              <span>R$ ${(item.price * item.quantity).toFixed(2).replace(".", ",")}</span>
+            </div>`
         )
         .join("");
 
@@ -50,8 +38,8 @@ export const loadOrders = () => {
 
       container.appendChild(orderCard);
     });
-  }, (error) => {
+  } catch (error) {
     console.error("Erro ao carregar pedidos:", error);
     container.innerHTML = `<p class="text-gray-600">Erro ao carregar pedidos.</p>`;
-  });
+  }
 };
