@@ -1,68 +1,60 @@
+// js/app.js
+
+// Importações dos Módulos
+import { supabase } from './supabaseClient.js';
+import { signInWithGoogle } from './auth.js';
 import { loadRestaurants } from "./restaurants.js";
-import { loadOrders } from "./orders.js"; // <- importando loadOrders
+import { loadOrders } from "./orders.js";
 
-window.showPage = (pageId, previousPageId = null) => {
-  const allPages = document.querySelectorAll(".page");
-  allPages.forEach((page) => page.classList.add("hidden"));
-
+// Função para mostrar/esconder páginas (você já tinha, mas com melhorias)
+window.showPage = (pageId) => {
+  document.querySelectorAll(".page").forEach((page) => {
+    page.classList.add("hidden");
+  });
   const targetPage = document.getElementById(`${pageId}-page`);
-  if (targetPage) targetPage.classList.remove("hidden");
+  if (targetPage) {
+    targetPage.classList.remove("hidden");
+    targetPage.classList.remove("flex-col"); // Garante que não afete outras páginas
+  }
 
-  const locationHeader = document.getElementById("location-icon-container");
+  // Lógica para mostrar/esconder o botão de voltar e título (você já tinha)
   const backButton = document.getElementById("back-button");
   const headerTitle = document.getElementById("header-title");
-
   if (pageId === "home") {
-    locationHeader.classList.remove("hidden");
     backButton.classList.add("hidden");
     headerTitle.textContent = "CatFood";
-  } else if (pageId === "menu") {
-    locationHeader.classList.add("hidden");
-    backButton.classList.remove("hidden");
-    headerTitle.textContent = "";
-  } else if (pageId === "cart") {
-    locationHeader.classList.add("hidden");
-    backButton.classList.remove("hidden");
-    headerTitle.textContent = "Meu Carrinho";
   } else {
-    locationHeader.classList.add("hidden");
     backButton.classList.remove("hidden");
-    headerTitle.textContent = pageId === "profile" ? "Meu Perfil" : "Meus Pedidos";
-  }
-
-  if (backButton) backButton.onclick = () => goBack(previousPageId);
-
-  const navItems = document.querySelectorAll(".nav-item");
-  navItems.forEach((item) => {
-    const itemPageId = item.getAttribute("onclick").match(/showPage\('(.+)'\)/)[1];
-    if (itemPageId === pageId) {
-      item.classList.remove("text-gray-400");
-      item.classList.add("text-purple-600");
-    } else {
-      item.classList.remove("text-purple-600");
-      item.classList.add("text-gray-400");
-    }
-  });
-
-  const cartButton = document.getElementById("cart-button");
-  if (["home", "menu"].includes(pageId)) {
-    cartButton.classList.add("scale-100");
-    cartButton.classList.remove("scale-0");
-  } else {
-    cartButton.classList.add("scale-0");
-    cartButton.classList.remove("scale-100");
-  }
-
-  // -> Chamada automática de loadOrders quando abrir a página de pedidos
-  if (pageId === "orders") {
-    loadOrders();
+    // Ajusta o título para outras páginas
+    if (pageId === 'auth') headerTitle.textContent = "Login";
+    if (pageId === 'menu') headerTitle.textContent = "Cardápio";
+    if (pageId === 'cart') headerTitle.textContent = "Carrinho";
+    if (pageId === 'orders') headerTitle.textContent = "Meus Pedidos";
+    if (pageId === 'profile') headerTitle.textContent = "Meu Perfil";
   }
 };
-document.addEventListener("DOMContentLoaded", () => {
-  const userId = localStorage.getItem("userId");
-  if (userId) {
-    window.showPage("home");
-  } else {
-    window.showPage("signup");
+
+// Ponto de entrada do App quando o HTML carrega
+document.addEventListener('DOMContentLoaded', () => {
+  // Adiciona o evento de clique no botão de login
+  const googleLoginButton = document.getElementById('google-login-btn');
+  if (googleLoginButton) {
+    googleLoginButton.addEventListener('click', () => {
+      signInWithGoogle();
+    });
   }
+
+  // Ouve mudanças no estado de autenticação (login, logout)
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session && session.user) {
+      // --- USUÁRIO ESTÁ LOGADO ---
+      console.log('Usuário logado:', session.user);
+      showPage('home'); // Mostra a página principal
+      loadRestaurants(); // <<-- FINALMENTE, CHAMAMOS AQUI!
+    } else {
+      // --- USUÁRIO NÃO ESTÁ LOGADO ---
+      console.log('Nenhum usuário logado.');
+      showPage('auth'); // Mostra a página de login
+    }
+  });
 });

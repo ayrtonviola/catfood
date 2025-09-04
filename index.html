@@ -83,16 +83,14 @@
         </div>
       </div>
 
-      <div id="signup-page" class="page hidden">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Cadastro</h2>
-        <form id="signup-form" class="space-y-4">
-          <input type="text" name="name" placeholder="Nome" required class="w-full p-3 border border-gray-300 rounded-xl" />
-          <input type="email" name="email" placeholder="Email" required class="w-full p-3 border border-gray-300 rounded-xl" />
-          <input type="tel" name="phone" placeholder="Telefone" class="w-full p-3 border border-gray-300 rounded-xl" />
-          <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors">
-            Cadastrar
-          </button>
-        </form>
+      <!-- Novo bloco de login Google -->
+      <div id="auth-page" class="page hidden flex flex-col items-center justify-center h-full text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Bem-vindo ao CatFood</h2>
+        <p class="text-gray-500 mb-8">Faça login para ver os melhores deliverys de Caatiba.</p>
+        <button id="google-login-btn" class="flex items-center justify-center w-full max-w-xs bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-5 h-5 mr-3">
+          Entrar com o Google
+        </button>
       </div>
 
       <!-- Botão flutuante do carrinho -->
