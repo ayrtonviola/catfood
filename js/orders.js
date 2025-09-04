@@ -3,7 +3,7 @@ export const loadOrders = async () => {
   container.innerHTML = `<p class="text-gray-600">Carregando pedidos...</p>`;
 
   try {
-    const res = await fetch("http://192.168.3.61:3000/orders/anon"); // ou ID real
+    const res = await fetch("/orders/anon"); // ou ID real
     const orders = await res.json();
 
     container.innerHTML = "";

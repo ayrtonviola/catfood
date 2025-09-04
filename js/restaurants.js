@@ -4,7 +4,7 @@ const SERVER_IP = "192.168.3.61:3000"; // IP do seu PC na rede
 
 export const loadRestaurants = async () => {
   try {
-    const res = await fetch(`http://${SERVER_IP}/restaurants`);
+    const res = await fetch(`/restaurants`)`;
     const restaurants = await res.json();
     renderRestaurants(restaurants);
   } catch (err) {

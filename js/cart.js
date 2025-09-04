@@ -63,7 +63,7 @@ export const checkout = async () => {
       status: "pendente",
     };
 
-    const res = await fetch("http://192.168.3.61:3000/orders", {
+    const res = await fetch("/orders", ...), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(order),
