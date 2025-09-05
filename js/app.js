@@ -2,11 +2,11 @@
 
 // Importações dos Módulos
 import { supabase } from './supabaseClient.js';
-import { signInWithGoogle } from './auth.js';
+import { signInWithGoogle, signOut } from './auth.js';
 import { loadRestaurants } from "./restaurants.js";
 import { loadOrders } from "./orders.js";
 
-// Função para mostrar/esconder páginas (você já tinha, mas com melhorias)
+// Função para mostrar/esconder páginas
 window.showPage = (pageId) => {
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.add("hidden");
@@ -14,10 +14,10 @@ window.showPage = (pageId) => {
   const targetPage = document.getElementById(`${pageId}-page`);
   if (targetPage) {
     targetPage.classList.remove("hidden");
-    targetPage.classList.remove("flex-col"); // Garante que não afete outras páginas
+    targetPage.classList.remove("flex-col");
   }
 
-  // Lógica para mostrar/esconder o botão de voltar e título (você já tinha)
+  // Header
   const backButton = document.getElementById("back-button");
   const headerTitle = document.getElementById("header-title");
   if (pageId === "home") {
@@ -25,7 +25,6 @@ window.showPage = (pageId) => {
     headerTitle.textContent = "CatFood";
   } else {
     backButton.classList.remove("hidden");
-    // Ajusta o título para outras páginas
     if (pageId === 'auth') headerTitle.textContent = "Login";
     if (pageId === 'menu') headerTitle.textContent = "Cardápio";
     if (pageId === 'cart') headerTitle.textContent = "Carrinho";
@@ -34,9 +33,9 @@ window.showPage = (pageId) => {
   }
 };
 
-// Ponto de entrada do App quando o HTML carrega
+// Ponto de entrada do App
 document.addEventListener('DOMContentLoaded', () => {
-  // Adiciona o evento de clique no botão de login
+  // Clique login Google
   const googleLoginButton = document.getElementById('google-login-btn');
   if (googleLoginButton) {
     googleLoginButton.addEventListener('click', () => {
@@ -44,17 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Ouve mudanças no estado de autenticação (login, logout)
+  // Estado de autenticação
   supabase.auth.onAuthStateChange((_event, session) => {
     if (session && session.user) {
-      // --- USUÁRIO ESTÁ LOGADO ---
       console.log('Usuário logado:', session.user);
-      showPage('home'); // Mostra a página principal
-      loadRestaurants(); // <<-- FINALMENTE, CHAMAMOS AQUI!
+      showPage('home');
+      loadRestaurants();
+
+      // Mostra email no perfil
+      const userEmailElement = document.getElementById('user-email');
+      if (userEmailElement) {
+        userEmailElement.textContent = session.user.email;
+      }
+
+      // Botão logout
+      const logoutButton = document.getElementById('logout-btn');
+      if (logoutButton) {
+        logoutButton.onclick = async () => {
+          await signOut();
+        };
+      }
+
     } else {
-      // --- USUÁRIO NÃO ESTÁ LOGADO ---
       console.log('Nenhum usuário logado.');
-      showPage('auth'); // Mostra a página de login
+      showPage('auth');
     }
   });
 });

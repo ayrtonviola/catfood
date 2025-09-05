@@ -45,30 +45,38 @@
 
     <!-- Conteúdo -->
     <main class="flex-grow overflow-y-auto p-4 space-y-6 relative">
+      <!-- Home -->
       <div id="home-page" class="page">
         <div id="local-restaurants" class="flex flex-col space-y-4">
           <p id="loading-message" class="text-center text-gray-500 mt-8">Carregando restaurantes...</p>
         </div>
       </div>
 
+      <!-- Menu -->
       <div id="menu-page" class="page hidden">
         <h2 id="menu-restaurant-name" class="text-2xl font-bold text-gray-800"></h2>
         <p id="menu-restaurant-type" class="text-sm text-gray-500 -mt-2"></p>
         <div id="menu-products" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
       </div>
 
+      <!-- Orders -->
       <div id="orders-page" class="page hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Meus Pedidos</h2>
         <div id="order-list" class="flex flex-col space-y-4"></div>
       </div>
 
-      <div id="profile-page" class="page hidden">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Meu Perfil</h2>
-        <div class="bg-gray-100 p-6 rounded-xl space-y-4">
-          <p class="text-gray-600">Dados do perfil aqui.</p>
-        </div>
+      <!-- Profile (atualizado) -->
+      <div id="profile-page" class="page hidden flex flex-col items-center justify-center h-full text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Meu Perfil</h2>
+        <!-- Exibir email do usuário -->
+        <p id="user-email" class="text-gray-600 mb-6"></p>
+        <!-- Botão de logout -->
+        <button id="logout-btn" class="w-full max-w-xs bg-red-500 text-white py-3 px-4 rounded-xl font-semibold hover:bg-red-600 transition-colors">
+          Sair
+        </button>
       </div>
 
+      <!-- Cart -->
       <div id="cart-page" class="page hidden">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Meu Carrinho</h2>
         <div id="cart-items" class="flex flex-col space-y-4"></div>
@@ -83,7 +91,7 @@
         </div>
       </div>
 
-      <!-- Novo bloco de login Google -->
+      <!-- Auth (login com Google) -->
       <div id="auth-page" class="page hidden flex flex-col items-center justify-center h-full text-center">
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Bem-vindo ao CatFood</h2>
         <p class="text-gray-500 mb-8">Faça login para ver os melhores deliverys de Caatiba.</p>
@@ -105,6 +113,6 @@
   </div>
 
   <!-- Scripts -->
- <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
