@@ -1,16 +1,22 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const cors = require('cors'); // <--- importado
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Inicializa Supabase
+// ----------------- MIDDLEWARES -----------------
+app.use(cors({
+  origin: 'https://catfood-two.vercel.app', // domínio permitido
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true
+}));
+
+app.use(express.json()); // middleware para JSON
+
+// ----------------- SUPABASE -----------------
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-
-// Middleware para JSON
-app.use(express.json());
 
 // ----------------- ENDPOINTS -----------------
 
@@ -101,6 +107,7 @@ app.get('/orders/:userId', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar pedidos' });
   }
 });
+
 // Cadastra um novo usuário
 app.post('/signup', async (req, res) => {
   const { name, email, phone } = req.body;
@@ -119,6 +126,7 @@ app.post('/signup', async (req, res) => {
     res.status(500).json({ error: 'Erro ao cadastrar usuário' });
   }
 });
+
 // ----------------- FRONTEND -----------------
 
 // Serve arquivos estáticos da pasta raiz
@@ -130,6 +138,7 @@ app.get('*', (req, res) => {
 });
 
 // ----------------- INÍCIO DO SERVIDOR -----------------
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
