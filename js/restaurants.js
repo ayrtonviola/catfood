@@ -1,10 +1,9 @@
 import { fetchAndRenderMenu } from "./menu.js";
-
-const SERVER_IP = "192.168.3.61:3000"; // IP do seu PC na rede
+import { API_BASE_URL } from './config.js';
 
 export const loadRestaurants = async () => {
   try {
-    const res = await fetch(`/restaurants`)`;
+    const res = await fetch(`${API_BASE_URL}/restaurants`);
     const restaurants = await res.json();
     renderRestaurants(restaurants);
   } catch (err) {

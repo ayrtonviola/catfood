@@ -1,10 +1,9 @@
 import { addToCart } from "./cart.js";
-
-const SERVER_IP = "192.168.3.61:3000"; // IP do seu PC na rede
+import { API_BASE_URL } from './config.js';
 
 export const fetchAndRenderMenu = async (restaurantId) => {
   try {
-    const res = await fetch(`/restaurants/...`)`;
+    const res = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}`);
     const categories = await res.json(); // array de categorias com itens
     renderMenu(categories);
   } catch (err) {

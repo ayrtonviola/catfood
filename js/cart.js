@@ -1,3 +1,6 @@
+import { supabase } from './supabaseClient.js';
+import { API_BASE_URL } from './config.js';
+
 export let cart = [];
 
 export const addToCart = (product) => {
@@ -56,14 +59,17 @@ export const checkout = async () => {
   }
 
   try {
+    // Pega o usuário logado
+    const { data: { user } } = await supabase.auth.getUser();
+
     const order = {
-      userId: "anon", // ou substitua por ID real se tiver login
+      userId: user?.id || "anon", // agora usa ID real se existir
       items: cart,
       total: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
       status: "pendente",
     };
 
-    const res = await fetch("/orders", ...), {
+    const res = await fetch(`${API_BASE_URL}/orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(order),

@@ -1,9 +1,11 @@
+import { API_BASE_URL } from './config.js';
+
 export const loadOrders = async () => {
   const container = document.getElementById("order-list");
   container.innerHTML = `<p class="text-gray-600">Carregando pedidos...</p>`;
 
   try {
-    const res = await fetch("/orders/anon"); // ou ID real
+    const res = await fetch(`${API_BASE_URL}/orders/anon`); // ou ID real
     const orders = await res.json();
 
     container.innerHTML = "";
