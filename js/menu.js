@@ -3,7 +3,7 @@ import { API_BASE_URL } from './config.js';
 
 export const fetchAndRenderMenu = async (restaurantId) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}`);
+    const res = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}/menu`);
     const categories = await res.json(); // array de categorias com itens
     renderMenu(categories);
   } catch (err) {
