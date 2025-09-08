@@ -1,10 +1,12 @@
 // js/auth.js
 import { supabase } from './supabaseClient.js';
 
-// Função que inicia o processo de login com o Google
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
+    options: {
+      redirectTo: 'https://catfood-two.vercel.app',
+    },
   });
 
   if (error) {
