@@ -20,11 +20,20 @@ window.showPage = (pageId) => {
   // Header
   const backButton = document.getElementById("back-button");
   const headerTitle = document.getElementById("header-title");
+  
+  // Lógica de esconder/mostrar o botão "Voltar" (aparece APENAS no 'menu')
   if (pageId === "home") {
     backButton.classList.add("hidden");
     headerTitle.textContent = "CatFood";
   } else {
-    backButton.classList.remove("hidden");
+    // Só mostra o botão de voltar na página de menu
+    if (pageId === "menu") {
+      backButton.classList.remove("hidden");
+    } else {
+      backButton.classList.add("hidden");
+    }
+
+    // Lógica para atualizar o título do cabeçalho
     if (pageId === 'auth') headerTitle.textContent = "Login";
     if (pageId === 'menu') headerTitle.textContent = "Cardápio";
     if (pageId === 'cart') headerTitle.textContent = "Carrinho";
@@ -35,7 +44,7 @@ window.showPage = (pageId) => {
 
 // Ponto de entrada do App
 document.addEventListener('DOMContentLoaded', () => {
-  // Clique login Google
+  // Evento de clique do Google Login
   const googleLoginButton = document.getElementById('google-login-btn');
   if (googleLoginButton) {
     googleLoginButton.addEventListener('click', () => {
@@ -43,11 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Estado de autenticação
+  // Evento de clique para o botão 'Voltar'
+  const backButton = document.getElementById("back-button");
+  if (backButton) {
+      backButton.addEventListener("click", () => {
+          window.showPage("home");
+          // Esconde o botão ao voltar para a home, garantindo que ele não fique visível.
+          backButton.classList.add("hidden"); 
+      });
+  }
+
+  // Estado de autenticação do Supabase
   supabase.auth.onAuthStateChange((_event, session) => {
     if (session && session.user) {
       console.log('Usuário logado:', session.user);
-      showPage('home');
+      window.showPage('home');
       loadRestaurants();
 
       // Mostra email no perfil
@@ -66,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } else {
       console.log('Nenhum usuário logado.');
-      showPage('auth');
+      window.showPage('auth');
     }
   });
 });
